@@ -1,0 +1,102 @@
+version: '3.7'
+services:
+
+  # Laravel Service
+  backend:
+    build:
+      context: laravel
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    # ports: 
+    #   - "8000:9000"
+    volumes:
+      - ./laravel/app:/var/www
+      - ./laravel/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - backend-network
+    depends_on:
+      - db
+
+  # Nginx Service
+  web:
+    image: nginx:alpine
+    container_name: api
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./laravel/app:/var/www
+      - ./laravel/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - backend-network
+    depends_on:
+      - backend
+
+  # Vue Service
+  frontend:
+    build:
+      context: vue
+      dockerfile: Dockerfile
+      target: build
+    container_name: vue_app
+    restart: unless-stopped
+    tty: true
+    working_dir: /app
+    ports: 
+      - "8080:8080"
+    volumes:
+      - ./vue/app:/app
+    networks:
+      - frontend-network
+    depends_on: 
+      - web
+
+  #Postgres Service
+  db:
+    image: postgres:9-alpine
+    container_name: db
+    restart: always
+    tty: true
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: laravel
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+  # DB Admin Service
+  adminer:
+    image: adminer:standalone
+    container_name: db_admin
+    restart: always
+    tty: true
+    ports: 
+      - '8081:8080'
+    depends_on: 
+      - db
+    networks:
+      - backend-network
+    
+#Docker Networks
+networks:
+  backend-network:
+    driver: bridge
+  frontend-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  dbdata:
+    driver: local
