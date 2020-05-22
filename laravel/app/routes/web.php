@@ -24,3 +24,8 @@ Route::get('/api', function () {
     ]);
 })->middleware('cors');
 
+
+// Route::apiResources([
+//     'nav'          => 'NavigationController',
+// ]);
+

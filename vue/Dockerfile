@@ -5,11 +5,11 @@ WORKDIR /app
 # install vue-cli
 RUN yarn global add @vue/cli @vue/cli-service-global
 
-COPY package*.json ./
+COPY package*.json yarn.lock ./
 
 # install all dependencies
 RUN yarn install
-COPY . .
+COPY app/ .
 CMD ["yarn", "serve"]
 
 # production stage

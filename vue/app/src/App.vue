@@ -1,20 +1,28 @@
 <template>
   <div id="app">
-    <Navigation />
-    <router-view />
-    <Footer />
+    <!-- dynamic layout component -->
+    <component :is="layout">
+      <router-view class="container-fluid pb-2 pt-4 main-content" />
+    </component>
   </div>
 </template>
 
 <script>
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import default_layout from "@/layouts/default";
+import admin_layout from "@/layouts/admin";
+
+const default_lay = "default";
 
 export default {
   name: "App",
   components: {
-    Navigation,
-    Footer
+    default_layout,
+    admin_layout
+  },
+  computed: {
+    layout() {
+      return (this.$route.meta.layout || default_lay) + "_layout";
+    }
   }
 };
 </script>
@@ -26,5 +34,19 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+.main-content {
+  /* min-height: calc(100% - 50px); */
+  min-height: calc(100vh - 96px); /* will cover the 100% of viewport */
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 100px; /* height of your footer */
+}
+
+.footer {
+  position: absolute;
+  /* bottom: 0; */
+  width: 100%;
 }
 </style>

@@ -1,13 +1,14 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-import Home from "@/pages/Home.vue";
-import About from "@/pages/Contact.vue";
-import Error404 from "@/pages/404.vue";
+import Home from "@/pages/Home";
+import About from "@/pages/Contact";
+import Error404 from "@/pages/404";
+
+import Dashboard from "@/pages/admin/Dashboard";
+import adminMenu from "@/pages/admin/menu";
 // import other pages for routes here
 
-// App title at browser tab is like "YOUR_APP_TITLE | CURRENT_PAGE_TITLE"
-import { name as APP_TITLE } from "@/../package.json";
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,24 @@ const routes = [
     },
   },
   {
+    path: "/admin",
+    name: "Admin",
+    component: Dashboard,
+    meta: {
+      title: "Admin",
+      layout: 'admin',
+    },
+  },
+  {
+    path: "/admin/menu",
+    name: "Menu",
+    component: adminMenu,
+    meta: {
+      title: "Menu",
+      layout: 'admin',
+    },
+  },
+  {
     // catch all not found routes(404) - define at the very end
     path: "*",
     component: Error404,
@@ -46,7 +65,8 @@ const router = new VueRouter({
 
 // app title update
 router.beforeEach((to, from, next) => {
-  document.title = APP_TITLE + " | " + to.meta.title;
+  // document.title = this.$APP_TITLE + " | " + to.meta.title;
+  document.title = to.meta.title;
   next();
 });
 

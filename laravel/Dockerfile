@@ -20,8 +20,15 @@ RUN apk update &&\
     && docker-php-ext-install mbstring \
     && docker-php-ext-install bcmath \
     && docker-php-ext-install opcache \
-    && docker-php-ext-install pdo_mysql \
-    && apk del autoconf g++ make
+    && docker-php-ext-install pdo_mysql
+
+RUN apk --no-cache add postgresql-dev
+RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql
+
+RUN apk del autoconf g++ make
+
+
 # && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
 # Install composer
