@@ -34,6 +34,9 @@ RUN apk del autoconf g++ make
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+RUN composer global require hirak/prestissimo
+
+
 # Add user for laravel application
 RUN addgroup -g 1000 -S www && adduser -u 1000 -S www -G www
 
@@ -45,6 +48,12 @@ COPY --chown=www:www . /var/www
 
 # Change current user to www
 USER www
+
+RUN composer install
+
+RUN cp -u .env.example .env
+RUN php artisan key:generate
+RUN php artisan config:clear
 
 # COPY start.sh .
 # ENTRYPOINT ["start.sh"]

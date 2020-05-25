@@ -24,7 +24,7 @@
               :class="[menu == currentMenu? 'active': null, menu.childrens.length > 0? 'dropdown': null]"
             >
               <router-link
-                :to="menu.childrens.length > 0? false: menu.url"
+                :to="menu.childrens.length > 0? '': menu.url"
                 class="nav-link"
                 :class="[menu == currentMenu? 'text-danger': null, menu.childrens.length > 0? 'dropdown-toggle': null]"
                 :id="menu.title + 'navbarDropdown'"
@@ -49,6 +49,10 @@
                 >{{subMenu.title}}</router-link>
               </div>
             </li>
+            <li class="nav-item">
+              <router-link v-if="!$root.access_token" to="/login" class="nav-link">Login</router-link>
+              <a v-else class="nav-link logout" @click="logout()">Logout</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -67,10 +71,24 @@ export default {
   },
   computed: {
     filteredMenus() {
-      return this.menus.filter(x => x.parent_id === null);
+      let _menus = this.menus.filter(x => x.parent_id === null); 
+      if(this.$root.access_token) {
+        _menus = _menus.filter(x => x.url !== '/login');
+      }
+      return _menus;
+      // return this.menus.filter(x => x.parent_id === null);
     }
   },
   methods: {
+    logout() {
+      console.log('logout called');
+      // console.log(localStorage.getItem('access-token'));
+      
+      localStorage.removeItem('access-token');
+      this.$root.access_token = null;
+      this.$router.push('/');
+    },
+
     async getMenus() {
       const url = "/nav";
       try {
@@ -102,5 +120,11 @@ nav >>> a {
 
 nav >>> a.dropdown-item {
   color: black;
+}
+
+.logout:hover {
+  text-decoration: none;
+  color:white;
+  cursor: pointer;
 }
 </style>>

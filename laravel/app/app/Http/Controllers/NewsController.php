@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Navigation;
+use App\News;
 use Illuminate\Http\Request;
 
-class NavigationController extends Controller
+class NewsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,13 +14,13 @@ class NavigationController extends Controller
      */
     public function index()
     {
-        $navs = Navigation::with('parent', 'childrens')->orderBy('parent_id', 'desc')->get();
+        $news = News::with('user')->orderBy('created_at', 'desc')->get();
 
-        return $navs;
+        return $news;
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage.get
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -28,30 +28,30 @@ class NavigationController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'parent_id' => 'nullable',
+            'user_id' => 'required|numeric|exists:users,id',
             'title'  => 'required|string|max:191',
-            'url'  => 'required|string|max:191|unique:navigations',
+            'description'  => 'required|string',
         ]);
 
-        $nav = Navigation::create([
-            'parent_id'  => $request->parent_id,
+        $news = News::create([
+            'user_id'  => $request->user_id,
             'title'  => $request->title,
-            'url'  => $request->url,    
+            'description'  => $request->description,    
         ]); 
 
-        return response()->json($nav, 201);
+        return response()->json($news, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Navigation  $navigation
+     * @param  \App\News  $news
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $nav = Navigation::find($id);
-        if(!is_null($nav)) return response()->json($nav, 200);
+        $news = News::find($id);
+        if(!is_null($news)) return response()->json($news, 200);
         return response()->json('Not Found', 404);
     }
 
@@ -59,26 +59,25 @@ class NavigationController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Navigation  $navigation
+     * @param  \App\News  $news
      * @return \Illuminate\Http\Response
      */
-    // public function update(Request $request, Navigation $navigation)
     public function update(Request $request, $id)
     {
-        $nav = Navigation::findOrFail($id);
+        $news = News::findOrFail($id);
         
         $this->validate($request, [
-            'parent_id' => 'nullable',
+            'user_id' => 'required|numeric|exists:users,id',
             'title'  => 'required|string|max:191',
-            'url'  => 'required|string|max:191|unique:navigations,url,'.$nav->id,
+            'description'  => 'required|string',
         ]);
         
-        $nav->parent_id  = $request->parent_id;
-        $nav->title = $request->title;
-        $nav->url = $request->url;   
+        $news->user_id  = $request->user_id;
+        $news->title = $request->title;
+        $news->description = $request->description;   
         try {
-            $nav->save();
-            return  response()->json($nav, 200);
+            $news->save();
+            return  response()->json($news, 200);
         } catch (Throwable $e) {
             report($e);
         }
@@ -87,15 +86,14 @@ class NavigationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Navigation  $navigation
+     * @param  \App\News  $news
      * @return \Illuminate\Http\Response
      */
-    // public function destroy(Navigation $navigation)
     public function destroy($id)
     {
-        $nav = Navigation::find($id);
-        if(!is_null($nav)) {
-            $nav->delete();
+        $news = News::find($id);
+        if(!is_null($news)) {
+            $news->delete();
             return response()->json(null, 204);
         }
 

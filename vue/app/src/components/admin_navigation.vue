@@ -53,6 +53,10 @@ export default {
         {
           title: "Menu",
           url: "/admin/menu"
+        },
+        {
+          title: "News",
+          url: "/admin/news"
         }
       ]
     };

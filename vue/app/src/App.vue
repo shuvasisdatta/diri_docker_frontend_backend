@@ -2,7 +2,7 @@
   <div id="app">
     <!-- dynamic layout component -->
     <component :is="layout">
-      <router-view class="container-fluid pb-2 pt-4 main-content" />
+      <router-view class="container-fluid main-content" />
     </component>
   </div>
 </template>
@@ -21,6 +21,7 @@ export default {
   },
   computed: {
     layout() {
+      console.log(`layout : ${this.$route.meta.layout}`)
       return (this.$route.meta.layout || default_lay) + "_layout";
     }
   }

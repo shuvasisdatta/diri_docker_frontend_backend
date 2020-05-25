@@ -13,8 +13,13 @@ import { name, version } from '../package.json';
 // window.$ = window.jQuery = jQuery;
 
 // default api baseurl for axios
-axios.defaults.baseURL = 'http://localhost/api/';
+// axios.defaults.baseURL = 'http://localhost/api/';
 Vue.prototype.$http = axios;
+Vue.prototype.$http.defaults.baseURL = 'http://localhost/api/';
+const token = localStorage.getItem('access-token')
+if (token) {
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = token
+}
 
 Vue.prototype.$jQuery = jQuery;
 
@@ -25,6 +30,9 @@ Vue.prototype.$APP_VERSION = version;
 // Toast Notification library
 Vue.use(VueAWN, {
   position: 'top-right',
+  durations: {
+    global: 2000,
+  }
 });
 
 // register multiselect component
@@ -36,4 +44,9 @@ Vue.config.productionTip = false
 new Vue({
   router,
   render: h => h(App),
+  data() {
+    return {
+      access_token: localStorage.getItem('access-token') || null,
+    }
+  }
 }).$mount('#app')

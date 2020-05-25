@@ -3,16 +3,26 @@ import VueRouter from "vue-router";
 
 import Home from "@/pages/Home";
 import About from "@/pages/Contact";
+import Login from "@/pages/Login";
 import Error404 from "@/pages/404";
 
 import Dashboard from "@/pages/admin/Dashboard";
 import adminMenu from "@/pages/admin/menu";
+import adminNews from "@/pages/admin/news";
 // import other pages for routes here
 
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/login",
+    name: "login",
+    component: Login,
+    meta: {
+      title: "Login",
+    },
+  },
   {
     path: "/",
     name: "home",
@@ -28,6 +38,7 @@ const routes = [
     component: About,
     meta: {
       title: "Contact",
+      hello: 'sad'
     },
   },
   {
@@ -49,6 +60,15 @@ const routes = [
     },
   },
   {
+    path: "/admin/news",
+    name: "News",
+    component: adminNews,
+    meta: {
+      title: "News",
+      layout: 'admin',
+    },
+  },
+  {
     // catch all not found routes(404) - define at the very end
     path: "*",
     component: Error404,
@@ -64,10 +84,22 @@ const router = new VueRouter({
 });
 
 // app title update
-router.beforeEach((to, from, next) => {
+router.beforeEach(async(to, from, next) => {
+  await Vue.nextTick()
   // document.title = this.$APP_TITLE + " | " + to.meta.title;
   document.title = to.meta.title;
-  next();
+  if (!router.app.access_token) { 
+    if(to.path != '/login') next({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
+    else next()
+  }
+  else {
+    if(to.path === '/login') next('/')
+    else next()
+  }
 });
 
 export default router;
+
