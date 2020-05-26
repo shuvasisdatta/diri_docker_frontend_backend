@@ -68,7 +68,8 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the token array structure.
+     * Get the token array struct
+     * ure.
      *
      * @param  string $token
      *
@@ -76,14 +77,18 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+        $user =  $this->me()->original;
+        $isAdmin = $user->name === 'Administrator';
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => $this->guard()->factory()->getTTL() * 60
+            'expires_in' => $this->guard()->factory()->getTTL() * 60,
+            'user'      => $user,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
-    /**
+    /*
      * Get the guard to be used during authentication.
      *
      * @return \Illuminate\Contracts\Auth\Guard

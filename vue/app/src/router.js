@@ -21,6 +21,7 @@ const routes = [
     component: Login,
     meta: {
       title: "Login",
+      layout: 'blank',
     },
   },
   {
@@ -31,14 +32,12 @@ const routes = [
       title: "Home",
     },
   },
-  // other menus goes there
   {
     path: "/contact",
     name: "contact",
     component: About,
     meta: {
       title: "Contact",
-      hello: 'sad'
     },
   },
   {
@@ -79,24 +78,25 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  // mode: "history",
+  mode: "history",
   routes,
 });
 
-// app title update
-router.beforeEach(async(to, from, next) => {
+// app title update 
+router.beforeEach(async(to, from, next) => {  
   await Vue.nextTick()
   // document.title = this.$APP_TITLE + " | " + to.meta.title;
+  // Todo: requireAuth meta for admin pages
   document.title = to.meta.title;
-  if (!router.app.access_token) { 
+  if (!router.app.access_token) {   
     if(to.path != '/login') next({
       path: '/login',
       query: { redirect: to.fullPath }
     })
     else next()
   }
-  else {
-    if(to.path === '/login') next('/')
+  else {  
+    if(to.path == '/login') next('/')
     else next()
   }
 });

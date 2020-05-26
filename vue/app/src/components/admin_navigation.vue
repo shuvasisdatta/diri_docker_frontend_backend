@@ -50,14 +50,6 @@ export default {
           title: "Dashboard",
           url: "/admin"
         },
-        {
-          title: "Menu",
-          url: "/admin/menu"
-        },
-        {
-          title: "News",
-          url: "/admin/news"
-        }
       ]
     };
   },

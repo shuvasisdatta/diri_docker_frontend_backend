@@ -47,6 +47,9 @@ new Vue({
   data() {
     return {
       access_token: localStorage.getItem('access-token') || null,
+      // loggedInUser: JSON.parse(localStorage.getItem('loggedInUser')),
+      isAdmin: localStorage.getItem('isAdmin') || false,
+      // loggedInUser: localStorage.getItem('loggedInUser') || null,
     }
   }
 }).$mount('#app')

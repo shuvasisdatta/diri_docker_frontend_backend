@@ -24,11 +24,6 @@ class NavigationTableSeeder extends Seeder
                 'title' =>  'Contact',
                 'url' => '/contact',
             ],
-            [ 
-                'title' =>  'Admin',
-                'url' => '/admin
-                ',
-            ]
         ];
         
         foreach ($navs as $nav) {

@@ -1,5 +1,5 @@
 <template>
-    <div class="row justify-content-center">
+    <div class="row justify-content-center mt-4">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header"><h3 class="text-center">Login</h3></div>
@@ -58,6 +58,9 @@
                     </form>
                 </div>
             </div>
+            <div class="card mt-5">
+                <h5 class="card-body font-weight-bold text-warning">Site is under construction</h5>
+            </div>
         </div>
     </div>
 </template>
@@ -84,11 +87,13 @@
 
                         // console.log(response)
                         localStorage.setItem('access-token', response.data.access_token);
+                        // localStorage.setItem('loggedInUser', JSON.stringify(response.data.user));
+                        localStorage.setItem('isAdmin', response.data.isAdmin);
+                        console.log(response.data);
                         this.$root.access_token = response.data.access_token;
-                        console.log(localStorage.getItem('access-token'))
-                        console.log(this.$root)
+                        // this.$root.loggedInUser = response.data.user;
+                        this.$root.isAdmin = response.data.isAdmin
                         this.$router.push(this.$route.query.redirect || '/');
-
                     })
                     .catch(error => {
                         console.log(error)

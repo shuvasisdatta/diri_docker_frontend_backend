@@ -49,11 +49,16 @@
                 >{{subMenu.title}}</router-link>
               </div>
             </li>
+          </ul>
+
             <li class="nav-item">
+              <router-link v-if="$root.isAdmin" to="/admin" class="nav-link">Admin</router-link>
+            </li>
+
+            <li class="nav-item pull-right">
               <router-link v-if="!$root.access_token" to="/login" class="nav-link">Login</router-link>
               <a v-else class="nav-link logout" @click="logout()">Logout</a>
             </li>
-          </ul>
         </div>
       </div>
     </nav>
@@ -81,11 +86,13 @@ export default {
   },
   methods: {
     logout() {
-      console.log('logout called');
-      // console.log(localStorage.getItem('access-token'));
-      
       localStorage.removeItem('access-token');
+      // localStorage.removeItem('loggedInUser');
+
+      localStorage.removeItem('isAdmin');
       this.$root.access_token = null;
+      // this.$root.loggedInUser = null;
+      this.$root.isAdmin = false;
       this.$router.push('/');
     },
 
