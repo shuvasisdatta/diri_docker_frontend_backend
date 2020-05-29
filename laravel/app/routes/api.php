@@ -38,4 +38,5 @@ Route::apiResources([
     'user'  => 'UserController',
     'nav'   => 'NavigationController',
     'news'  => 'NewsController',
+    'event'  => 'EventController',
 ]);

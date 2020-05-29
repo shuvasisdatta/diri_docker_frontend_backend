@@ -1,8 +1,8 @@
 <template>
   <section>
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar fixed-top navbar-expand-lg">
       <div class="container">
-        <a class="navbar-brand" href="#">{{ $APP_TITLE }}</a>
+        <a class="navbar-brand " href="#">{{ $APP_TITLE }}</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -21,18 +21,17 @@
               v-for="menu in filteredMenus"
               :key="menu.url"
               class="nav-item"
-              :class="[menu == currentMenu? 'active': null, menu.childrens.length > 0? 'dropdown': null]"
+              :class="[menu.childrens.length > 0? 'dropdown': null]"
             >
               <router-link
                 :to="menu.childrens.length > 0? '': menu.url"
                 class="nav-link"
-                :class="[menu == currentMenu? 'text-danger': null, menu.childrens.length > 0? 'dropdown-toggle': null]"
+                :class="[menu.childrens.length > 0? 'dropdown-toggle': null]"
                 :id="menu.title + 'navbarDropdown'"
                 role="button"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
-                @click.native="currentMenu = menu"
               >{{menu.title}}</router-link>
 
               <div
@@ -50,7 +49,7 @@
               </div>
             </li>
           </ul>
-
+          <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <router-link v-if="$root.isAdmin" to="/admin" class="nav-link">Admin</router-link>
             </li>
@@ -59,6 +58,7 @@
               <router-link v-if="!$root.access_token" to="/login" class="nav-link">Login</router-link>
               <a v-else class="nav-link logout" @click="logout()">Logout</a>
             </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -70,7 +70,6 @@ export default {
   name: "Navigation",
   data() {
     return {
-      currentMenu: null,
       menus: []
     };
   },
@@ -110,9 +109,6 @@ export default {
   mounted() {
     // getMenus
     this.getMenus();
-
-    // initial menu
-    this.currentMenu = this.menus[0];
   }
 };
 </script>
@@ -123,6 +119,10 @@ nav.navbar {
 }
 nav >>> a {
   color: white;
+}
+
+nav >>> a:hover {
+  background-color: black;
 }
 
 nav >>> a.dropdown-item {

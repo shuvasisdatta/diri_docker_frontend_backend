@@ -2,7 +2,7 @@
   <div id="app">
     <!-- dynamic layout component -->
     <component :is="layout">
-      <router-view class="container-fluid main-content" />
+      <router-view class="container-fluid pt-4 main-content" />
     </component>
   </div>
 </template>
@@ -40,16 +40,15 @@ export default {
 }
 
 .main-content {
-  /* min-height: calc(100% - 50px); */
-  min-height: calc(100vh - 96px); /* will cover the 100% of viewport */
+  min-height: calc(100vh - 94px); /* will cover the 100% of viewport */
   overflow: hidden;
   position: relative;
   padding-bottom: 100px; /* height of your footer */
+  margin-top: 54px;
 }
 
 .footer {
   position: absolute;
-  /* bottom: 0; */
   width: 100%;
 }
 </style>

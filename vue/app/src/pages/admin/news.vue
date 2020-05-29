@@ -38,12 +38,12 @@
             @vuetable:pagination-data="onPaginationData"
           >
             <div slot="actions" slot-scope="props">
-              <button class="btn btn-success" @click="onActionClicked('edit-item', props.rowData)">
+              <button class="btn btn-sm btn-success" @click="onActionClicked('edit-item', props.rowData)">
                 <i class="fas fa-edit"></i>
               </button>
               &nbsp;
               <button
-                class="btn btn-danger"
+                class="btn btn-sm btn-danger"
                 @click="onActionClicked('delete-item', props.rowData)"
               >
                 <i class="fas fa-trash"></i>
@@ -74,8 +74,8 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 v-if="!editMode" class="modal-title" id="ModalTitle">Add Department</h5>
-            <h5 v-else class="modal-title" id="ModalTitle">Update Department</h5>
+            <h5 v-if="!editMode" class="modal-title" id="ModalTitle">Add News</h5>
+            <h5 v-else class="modal-title" id="ModalTitle">Update News</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -146,8 +146,8 @@ export default {
     return {
       searchQuery: '',
       css: css4bootstrap,
-      perPageOption: [3, 5, 10, 20, 50],
-      perPage: 3,
+      perPageOption: [5, 10, 20, 50],
+      perPage: 5,
       fields: [
         {
           name: 'title',
@@ -170,7 +170,10 @@ export default {
           name: 'updated_at',
           title: 'Updated',
         },
-        'actions'
+        { 
+          name: 'actions',
+          width: '100px',
+        }
       ],      
       editMode: false,
       api_url: '/news',

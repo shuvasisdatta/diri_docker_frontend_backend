@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-success">
+  <nav class="navbar  navbar-expand-lg">
     <div class="container">
       <a class="navbar-brand" href="#">{{ $APP_TITLE }}</a>
       <button
@@ -20,13 +20,10 @@
             v-for="menu in menus"
             :key="menu.url"
             class="nav-item"
-            :class="menu == currentMenu? 'active': null"
           >
             <router-link
               :to="menu.url"
               class="nav-link"
-              :class="menu == currentMenu? 'text-danger': null"
-              @click.native="currentMenu = menu"
             >{{menu.title}}</router-link>
           </li>
         </ul>
@@ -40,7 +37,6 @@ export default {
   name: "Navigation",
   data() {
     return {
-      currentMenu: null,
       menus: [
         {
           title: "Home",
@@ -54,12 +50,23 @@ export default {
     };
   },
   methods: {},
-  mounted() {
-    // initial menu
-    this.currentMenu = this.menus[0];
-  }
+  mounted() {}
 };
 </script>
 
 <style scoped>
+nav.navbar {
+  background-color: #021a55;
+}
+nav >>> a {
+  color: white;
+}
+
+nav >>> a:hover {
+  background-color: black;
+}
+
+nav >>> a.dropdown-item {
+  color: black;
+}
 </style>>

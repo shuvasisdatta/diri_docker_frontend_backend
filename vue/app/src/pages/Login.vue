@@ -1,5 +1,5 @@
 <template>
-    <div class="row justify-content-center mt-4">
+    <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header"><h3 class="text-center">Login</h3></div>

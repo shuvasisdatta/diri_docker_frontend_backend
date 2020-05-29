@@ -4,11 +4,15 @@ import VueRouter from "vue-router";
 import Home from "@/pages/Home";
 import About from "@/pages/Contact";
 import Login from "@/pages/Login";
+
+import newsDetail from "@/pages/NewsDetail";
+import eventDetail from "@/pages/EventDetail";
 import Error404 from "@/pages/404";
 
 import Dashboard from "@/pages/admin/Dashboard";
 import adminMenu from "@/pages/admin/menu";
 import adminNews from "@/pages/admin/news";
+import adminEvent from "@/pages/admin/event";
 // import other pages for routes here
 
 
@@ -65,6 +69,31 @@ const routes = [
     meta: {
       title: "News",
       layout: 'admin',
+    },
+  },
+  {
+    path: "/news/:id",
+    name: "NewsDetail",
+    component: newsDetail,
+    meta: {
+      title: "News Detail"
+    },
+  },
+  {
+    path: "/admin/event",
+    name: "Events",
+    component: adminEvent,
+    meta: {
+      title: "Events",
+      layout: 'admin',
+    },
+  },
+  {
+    path: "/event/:id",
+    name: "EventDetail",
+    component: eventDetail,
+    meta: {
+      title: "Event Detail"
     },
   },
   {

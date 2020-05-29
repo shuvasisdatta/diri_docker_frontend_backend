@@ -5,6 +5,7 @@ import Multiselect from 'vue-multiselect';
 import jQuery from 'jquery';
 import 'popper.js';
 import 'bootstrap';
+import moment from 'moment';
 import App from './App.vue'
 import router from "./router";
 import './assets/css/app.scss';
@@ -37,6 +38,9 @@ Vue.use(VueAWN, {
 
 // register multiselect component
 Vue.component('multiselect', Multiselect);
+
+// moment
+Vue.prototype.$moment = moment;
 
 
 Vue.config.productionTip = false

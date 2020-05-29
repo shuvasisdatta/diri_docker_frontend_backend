@@ -74,8 +74,8 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 v-if="!editMode" class="modal-title" id="ModalTitle">Add Menu</h5>
-            <h5 v-else class="modal-title" id="ModalTitle">Update Menu</h5>
+            <h5 v-if="!editMode" class="modal-title" id="ModalTitle">Add Event</h5>
+            <h5 v-else class="modal-title" id="ModalTitle">Update Event</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -94,27 +94,42 @@
                 />
               </div>
               <div class="form-group">
-                <label for="title">Parent</label>
+                <label for="title">Author</label>
                 <multiselect
-                  v-model="parent_value"
-                  :options="menus"
+                  v-model="user_value"
+                  :options="users"
                   :searchable="true"
                   :close-on-select="true"
-                  label="title"
-                  track-by="url"
-                  @select="payloadParentIdSet"
+                  label="name"
+                  track-by="id"
+                  @select="payloadUserIdSet"
                 ></multiselect>
               </div>
               <div class="form-group">
-                <label for="url">Url</label>
-                <input
+                <label for="description">Description</label>
+                <textarea
                   type="text"
-                  v-model="payload.url"
-                  id="url"
-                  name="url"
-                  placeholder="Url"
+                  v-model="payload.description"
+                  id="description"
+                  placeholder="description"
                   class="form-control"
-                />
+                >
+                </textarea>
+              </div>
+              <div class="form-group">
+                <label for="location">Location</label>
+                <textarea
+                  type="text"
+                  v-model="payload.location"
+                  id="location"
+                  placeholder="location"
+                  class="form-control"
+                >
+                </textarea>
+              </div>
+              <div class="form-group">
+                <label for="time">Time</label>
+                <date-picker id="time" v-model="payload.time" :config="options"></date-picker>
               </div>
             </div>
             <div class="modal-footer">
@@ -131,30 +146,20 @@
 </template>
 
 <script lang="js">
+
 import Vuetable from 'vuetable-2';
 import VuetablePagination from "vuetable-2/src/components/VuetablePagination";
 import _ from "lodash";
 import css4bootstrap from "@/css4bootstrap.js";
+import datePicker from 'vue-bootstrap-datetimepicker';
 export default {
-  name: 'adminMenu',
+  name: 'adminEvent',
   components: {
     Vuetable,
     VuetablePagination,
+    datePicker,
   },
   data() {
-    let sortOrders = [];
-      let columns = [
-        {name: 'title', label: 'Title', sortable: true, filterable: true },
-        {name: 'Parent', label: 'Parent', sortable: true, filterable: true },
-        {name: 'url', label: 'Url', sortable: true, filterable: true },
-        {name: 'created_at', label: 'Created', sortable: true, filterable: false},
-        {name: 'updated_at', label: 'Updated', sortable: true, filterable: false},
-        {name: 'modify', label: 'Modify', sortable: false, filterable: false}
-      ];
-      columns.forEach((column) => {
-        sortOrders[column.name] = -1;
-      });
-
     return {
       searchQuery: '',
       css: css4bootstrap,
@@ -166,13 +171,21 @@ export default {
           sortField: 'title'
         },
         {
-          name: 'parent.title',
-          title: 'Parent',
-          sortField: 'parent_id'
+          name: 'description',
+          sortField: 'description'
         },
         {
-          name: 'url',
-          sortField: 'url'
+          name: 'location',
+          sortField: 'location'
+        },
+        {
+          name: 'time',
+          sortField: 'time'
+        },
+        {
+          name: 'user.name',
+          title: 'Publisher',
+          sortField: 'user_id'
         },
         {
           name: 'created_at',
@@ -188,26 +201,53 @@ export default {
         }
       ],      
       editMode: false,
-      api_url: '/nav',
-      menus: [],
+      api_url: '/event',
+      events: [],
+      users: [],
       payload: {
         id: null,
-        parent_id: null,
+        user_id: null,
         title: null,
-        url: ''
+        description: null,
+        location: null,
+        time: null,
       },
-      parent_value: null,
+      user_value: null,
+      options: {
+        // format must be like this as database field is datetime
+        format: 'YYYY-MM-DD HH:mm:ss',  
+        useCurrent: true,
+        showClear: true,
+        showClose: true,
+        icons: 
+        {
+          time: 'far fa-clock',
+          date: 'far fa-calendar',
+          up: 'fas fa-arrow-up',
+          down: 'fas fa-arrow-down',
+          previous: 'fas fa-chevron-left',
+          next: 'fas fa-chevron-right',
+          today: 'fas fa-calendar-check',
+          clear: 'far fa-trash-alt',
+          close: 'far fa-times-circle'    
+        },
+      }
     }
   },
   computed: {
-    filteredMenus() {
+    filteredEvents() {
       const query = this.searchQuery.toLowerCase();
-      return this.menus.filter(e => e.title.toLowerCase().includes(query) || e.parent?.title.toLowerCase().includes(query));
+      return this.events.filter(e => e.title.toLowerCase().includes(query) || 
+        e.description.toLowerCase().includes(query) || 
+        e.user?.name.toLowerCase().includes(query) ||
+        e.location.toLowerCase().includes(query) || 
+        e.time.toLowerCase().includes(query)
+        );
     }
   },
   watch: {
     // eslint-disable-next-line
-    filteredMenus(newVal, oldVal) {
+    filteredEvents(newVal, oldVal) {
       this.$refs.vuetable.refresh();
     }
   },
@@ -219,9 +259,9 @@ export default {
       this.$refs.vuetable.changePage(page);
     },
     dataManager(sortOrder, pagination) {
-      if (this.menus.length < 1) return;
+      if (this.events.length < 1) return;
 
-      let local = this.filteredMenus;
+      let local = this.filteredEvents;
       // console.log(local);
 
       // sortOrder can be empty, so we have to check for that as well
@@ -260,22 +300,25 @@ export default {
       }
     },
 
-    payloadParentIdSet(selectedMenu) {
-      this.payload.parent_id = selectedMenu.id;
+    payloadUserIdSet(selectedMenu) {
+      this.payload.user_id = selectedMenu.id;
+      console.log(this.payload.user_id)
     },
 
     initPayload(data = {}) {
       this.payload.id = data.id;
-      this.payload.parent_id = data.parent_id;
+      this.payload.user_id = data.user_id;
       this.payload.title = data.title;
-      this.payload.url = data.url;
+      this.payload.description = data.description;
+      this.payload.location = data.location;
+      this.payload.time = data.time;
     },
     
 
     createModal() {
       this.editMode = false;
       
-      this.initPayload();
+      // this.initPayload();
       this.$jQuery('#Modal').modal('show');
     },
 
@@ -283,15 +326,17 @@ export default {
       this.editMode = true;
       this.initPayload(data);
       // set the parentMenu selected item
-      this.parent_value = this.menus.find(e => e.id === this.payload.parent_id)
+      this.user_value = this.users.find(e => e.id === this.payload.user_id)
       this.$jQuery('#Modal').modal('show');
     },
 
     async getData() {
       const url = this.api_url;
       try {
-        const res = await this.$http.get(url);
-        this.menus = res.data;
+        let res = await this.$http.get(url);
+        this.events = res.data;
+        res = await this.$http.get('/user');
+        this.users = res.data;
         console.log(res);
       } catch (err) {
         console.log(err);
@@ -302,9 +347,11 @@ export default {
       const url = this.api_url;
       try {
         const payload = {
-          parent_id: this.payload.parent_id,
+          user_id: this.payload.user_id,
           title: this.payload.title,
-          url: this.payload.url,
+          description: this.payload.description,
+          location: this.payload.location,
+          time: this.payload.time,
         };
         
         const res = await this.$http.post(url, payload);
@@ -324,13 +371,16 @@ export default {
       const url = this.api_url + '/' + this.payload.id;
       try {
         const payload = {
-          parent_id: this.payload.parent_id,
+          user_id: this.payload.user_id,
           title: this.payload.title,
-          url: this.payload.url,
+          description: this.payload.description,
+          location: this.payload.location,
+          time: this.payload.time,  
         };
         
         const res = await this.$http.put(url, payload);
         this.$awn.success('Udated successfully');
+
         console.log(res);
         
         // emit an event to refetch data to update table

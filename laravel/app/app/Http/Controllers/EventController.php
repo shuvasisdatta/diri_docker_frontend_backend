@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\News;
+use App\Event;
 use Illuminate\Http\Request;
 
-class NewsController extends Controller
+class EventController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,13 +14,13 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = News::with('user')->orderBy('created_at', 'desc')->get();
+        $events = Event::with('user')->orderBy('created_at', 'desc')->get();
 
-        return $news;
+        return $events;
     }
 
     /**
-     * Store a newly created resource in storage.get
+     * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -31,27 +31,31 @@ class NewsController extends Controller
             'user_id' => 'required|numeric|exists:users,id',
             'title'  => 'required|string|max:191',
             'description'  => 'required|string',
+            'location'  => 'required|string',
+            'time'  => 'required',
         ]);
 
-        $news = News::create([
+        $event = Event::create([
             'user_id'  => $request->user_id,
             'title'  => $request->title,
-            'description'  => $request->description,    
+            'description'  => $request->description,  
+            'location'  => $request->location, 
+            'time'  => $request->time,   
         ]); 
 
-        return response()->json($news, 201);
+        return response()->json($event, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\News  $news
+     * @param  \App\Event  $event
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $news = News::with('user')->find($id);
-        if(!is_null($news)) return response()->json($news, 200);
+        $event = Event::with('user')->find($id);
+        if(!is_null($event)) return response()->json($event, 200);
         return response()->json('Not Found', 404);
     }
 
@@ -59,38 +63,42 @@ class NewsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\News  $news
+     * @param  \App\Event  $event
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $news = News::findOrFail($id);
-        
+        $event = Event::findOrFail($id);
+
         $this->validate($request, [
             'user_id' => 'required|numeric|exists:users,id',
             'title'  => 'required|string|max:191',
             'description'  => 'required|string',
+            'location'  => 'required|string',
+            'time'  => 'required',
         ]);
-        
-        $news->user_id  = $request->user_id;
-        $news->title = $request->title;
-        $news->description = $request->description;   
-        
-        $news->save();
-        return  response()->json($news, 200);
+
+        $event->user_id  = $request->user_id;
+        $event->title = $request->title;
+        $event->description = $request->description;  
+        $event->location = $request->location;  
+        $event->time = $request->time;  
+
+        $event->save();
+        return  response()->json($event, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\News  $news
+     * @param  \App\Event  $event
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $news = News::find($id);
-        if(!is_null($news)) {
-            $news->delete();
+        $event = Event::find($id);
+        if(!is_null($event)) {
+            $event->delete();
             return response()->json(null, 204);
         }
 

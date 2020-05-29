@@ -12,9 +12,11 @@ RUN yarn install
 COPY app/ .
 CMD ["yarn", "serve"]
 
+RUN yarn build
+
 # production stage
 FROM nginx:alpine as production
-RUN yarn build
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/nginx.conf /etc/nginx/conf.d/
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
