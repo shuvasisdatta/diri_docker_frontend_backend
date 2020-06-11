@@ -16,7 +16,7 @@ import { name, version } from '../package.json';
 // default api baseurl for axios
 // axios.defaults.baseURL = 'http://localhost/api/';
 Vue.prototype.$http = axios;
-Vue.prototype.$http.defaults.baseURL = 'http://localhost/api/';
+Vue.prototype.$http.defaults.baseURL = 'http://localhost:8000/api/';
 const token = localStorage.getItem('access-token')
 if (token) {
   Vue.prototype.$http.defaults.headers.common['Authorization'] = token
@@ -52,7 +52,7 @@ new Vue({
     return {
       access_token: localStorage.getItem('access-token') || null,
       // loggedInUser: JSON.parse(localStorage.getItem('loggedInUser')),
-      isAdmin: localStorage.getItem('isAdmin') || false,
+      isAdmin: JSON.parse(localStorage.getItem('isAdmin')) || false,
       // loggedInUser: localStorage.getItem('loggedInUser') || null,
     }
   }
