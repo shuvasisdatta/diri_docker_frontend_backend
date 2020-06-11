@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Vue from "vue";
 import VueRouter from "vue-router";
 
@@ -34,6 +35,7 @@ const routes = [
     component: Home,
     meta: {
       title: "Home",
+      requiresAuth: true,
     },
   },
   {
@@ -42,6 +44,7 @@ const routes = [
     component: About,
     meta: {
       title: "Contact",
+      requiresAuth: true,
     },
   },
   {
@@ -51,6 +54,7 @@ const routes = [
     meta: {
       title: "Admin",
       layout: 'admin',
+      requiresAdminAuth: true,
     },
   },
   {
@@ -60,6 +64,7 @@ const routes = [
     meta: {
       title: "Menu",
       layout: 'admin',
+      requiresAdminAuth: true,
     },
   },
   {
@@ -69,6 +74,7 @@ const routes = [
     meta: {
       title: "News",
       layout: 'admin',
+      requiresAdminAuth: true,
     },
   },
   {
@@ -76,7 +82,8 @@ const routes = [
     name: "NewsDetail",
     component: newsDetail,
     meta: {
-      title: "News Detail"
+      title: "News Detail",
+      requiresAuth: true,
     },
   },
   {
@@ -86,6 +93,7 @@ const routes = [
     meta: {
       title: "Events",
       layout: 'admin',
+      requiresAdminAuth: true,
     },
   },
   {
@@ -93,12 +101,14 @@ const routes = [
     name: "EventDetail",
     component: eventDetail,
     meta: {
-      title: "Event Detail"
+      title: "Event Detail",
+      requiresAuth: true,
     },
   },
   {
     // catch all not found routes(404) - define at the very end
     path: "*",
+    name: "404",
     component: Error404,
     meta: {
       title: "404",
@@ -115,19 +125,39 @@ const router = new VueRouter({
 router.beforeEach(async(to, from, next) => {  
   await Vue.nextTick()
   // document.title = this.$APP_TITLE + " | " + to.meta.title;
-  // Todo: requireAuth meta for admin pages
+  // Todo: requiresAuth meta for admin pages
   document.title = to.meta.title;
-  if (!router.app.access_token) {   
-    if(to.path != '/login') next({
-      path: '/login',
-      query: { redirect: to.fullPath }
-    })
+  // if (!router.app.access_token) {   
+  //   if(to.path != '/login') next({
+  //     path: '/login',
+  //     query: { redirect: to.fullPath }
+  //   })
+  //   else next()
+  // }
+  // else {  
+  //   if(to.path == '/login') next('/')
+  //   else next()
+  // }
+  
+  if (to.matched.some(record => record.meta.requiresAuth) || to.matched.some(record => record.meta.requiresAdminAuth)) {
+    if (!router.app.access_token) {
+      next({
+        path: '/login',
+        query: {
+          redirect: to.fullPath
+        }
+      })
+    } else if (to.matched.some(record => record.meta.requiresAdminAuth)) {
+      if (router.app.isAdmin) next() 
+      else next('/404')
+    } else next()  
+  } else {
+    // if the url is login and user is already authenticated then route to root url else pass the next()
+    if (to.path === '/login' && (router.app.access_token)) next('/')
     else next()
   }
-  else {  
-    if(to.path == '/login') next('/')
-    else next()
-  }
+
+
 });
 
 export default router;
